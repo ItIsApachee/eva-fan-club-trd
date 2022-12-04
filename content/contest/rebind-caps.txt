@@ -1,0 +1,6 @@
+~/.caps-to-esc:
+clear Lock
+keycode 0x42 = Escape
+
+To apply:
+xmodmap ~/.caps-to-esc

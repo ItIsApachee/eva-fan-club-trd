@@ -1,14 +1,19 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+#define LF '\n'
+#define SP ' '
 #define rep(i, a, b) for(int i = a; i < (b); ++i)
 #define all(x) begin(x), end(x)
-#define sz(x) (int)(x).size()
-typedef long long ll;
-typedef pair<int, int> pii;
-typedef vector<int> vi;
+using ll = long long;
+using ull = unsigned long long;
+using ld = long double;
+// typedefs used in kactl code:
+// #define sz(x) x.size()
+// typedef pair<int, int> pii;
+// typedef vector<int> vi;
 
 int main() {
-	cin.tie(0)->sync_with_stdio(0);
-	cin.exceptions(cin.failbit);
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
 }

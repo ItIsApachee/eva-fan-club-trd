@@ -1,75 +1,95 @@
 /**
- * Author: Emil Lenngren, Simon Lindholm
- * Date: 2011-11-29
+ * Author: Sergey Panin
  * License: CC0
- * Source: folklore
- * Description: Calculates a valid assignment to boolean variables a, b, c,... to a 2-SAT problem, so that an expression of the type $(a\|\|b)\&\&(!a\|\|c)\&\&(d\|\|!b)\&\&...$ becomes true, or reports that it is unsatisfiable.
- * Negated variables are represented by bit-inversions (\texttt{\tilde{}x}).
- * Usage:
- *  TwoSat ts(number of boolean variables);
- *  ts.either(0, \tilde3); // Var 0 is true or var 3 is false
- *  ts.setValue(2); // Var 2 is true
- *  ts.atMostOne({0,\tilde1,2}); // <= 1 of vars 0, \tilde1 and 2 are true
- *  ts.solve(); // Returns true iff it is solvable
- *  ts.values[0..N-1] holds the assigned values to the vars
- * Time: O(N+E), where N is the number of boolean variables, and E is the number of clauses.
- * Status: stress-tested
+ * Description: 2-SAT.	
+ * Time: ???
  */
 #pragma once
 
-struct TwoSat {
-	int N;
-	vector<vi> gr;
-	vi values; // 0 = false, 1 = true
+#include <bits/stdc++.h>
 
-	TwoSat(int n = 0) : N(n), gr(2*n) {}
+#define eps 10e-7
+#define ll long long
+#define pb push_back
+#define all(x) (x).begin(),(x).end()
+ 
+using namespace std;
+ 
+vector <vector <int>> g, gt;
+vector <bool> used;
+vector <int> topsort, comp;
+ 
+void dfs1(int v) {
+    used[v] = true;
+    for (auto to : g[v])
+        if (!used[to])
+            dfs1(to);
+    topsort.pb(v);
+}
+ 
+void dfs2(int v, int cl) {
+    comp[v] = cl;
+    for (auto to : gt[v])
+        if (comp[to] == -1)
+            dfs2(to, cl);
+}
+ 
+ 
+int main()
+{
+    int n, m; // m - number of vertices
+    cin >> n >> m;
 
-	int addVar() { // (optional)
-		gr.emplace_back();
-		gr.emplace_back();
-		return N++;
-	}
+    g.resize(2*m); // direct graph
+    gt.resize(2*m); // inverse graph
 
-	void either(int f, int j) {
-		f = max(2*f, -1-2*f);
-		j = max(2*j, -1-2*j);
-		gr[f].push_back(j^1);
-		gr[j].push_back(f^1);
-	}
-	void setValue(int x) { either(x, x); }
-
-	void atMostOne(const vi& li) { // (optional)
-		if (sz(li) <= 1) return;
-		int cur = ~li[0];
-		rep(i,2,sz(li)) {
-			int next = addVar();
-			either(cur, ~li[i]);
-			either(cur, next);
-			either(~li[i], next);
-			cur = ~next;
-		}
-		either(cur, ~li[1]);
-	}
-
-	vi val, comp, z; int time = 0;
-	int dfs(int i) {
-		int low = val[i] = ++time, x; z.push_back(i);
-		for(int e : gr[i]) if (!comp[e])
-			low = min(low, val[e] ?: dfs(e));
-		if (low == val[i]) do {
-			x = z.back(); z.pop_back();
-			comp[x] = low;
-			if (values[x>>1] == -1)
-				values[x>>1] = x&1;
-		} while (x != i);
-		return val[i] = low;
-	}
-
-	bool solve() {
-		values.assign(N, -1);
-		val.assign(2*N, 0); comp = val;
-		rep(i,0,2*N) if (!comp[i]) dfs(i);
-		rep(i,0,N) if (comp[2*i] == comp[2*i+1]) return 0;
-		return 1;
-	}
-};
+    // graph construction
+    // (a || b) && (b || !c)
+    // edges
+    // !a => b
+    // !b => a
+    // !b => !c
+    // c => b
+    vector <int> res(m);
+    for (int i = 0; i < 2*m; i++) {
+        for (auto item : g[i]) {
+            gt[item].pb(i);
+        }
+    }
+ 
+    used.assign(2*m, false);
+    for (int i = 0; i < 2*m; i++)
+        if (!used[i])
+            dfs1(i);
+ 
+    comp.assign(2*m, -1);
+ 
+    reverse(all(topsort));
+ 
+    for (int i = 0, j = 0; i < 2*m; i++) {
+        int v = topsort[i];
+        if (comp[v] == -1) {
+            dfs2(v, j);
+            j++;
+        }
+    }
+ 
+    for (int i = 0; i < m; i++) {
+        if (comp[2*i] == comp[2*i + 1] && comp[2*i + 1] != -1) {
+            cout << "IMPOSSIBLE";
+            return 0;
+        }
+    }
+ 
+    for (int i = 0; i < m; i++) {
+        if (comp[2*i] == -1) {
+            res[i] = true;
+            continue;
+        }
+        if (comp[2*i] > comp[2*i + 1])
+            res[i] = true;
+        else
+            res[i] = false;
+    }
+    return 0;
+}

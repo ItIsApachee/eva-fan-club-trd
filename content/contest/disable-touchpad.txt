@@ -1,0 +1,6 @@
+Step 1. 
+xinput list
+Step 2.
+Find touchpad id.
+Step 3.
+xinput --disable id
