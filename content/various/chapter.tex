@@ -32,10 +32,28 @@
 			\item \verb@rep(b,0,K) rep(i,0,(1 << K))@ \\ \verb@  if (i & 1 << b) D[i] += D[i^(1 << b)];@ computes all sums of subsets.
 		\end{itemize}
 	\subsection{Pragmas}
+		\kactlimport[-l rawcpp]{common-pragmas.cpp}
+		Detailed description of pragmas:
+		\lstinline{#pragma GCC optimize("...")}
 		\begin{itemize}
-			\item \lstinline{#pragma GCC optimize ("Ofast")} will make GCC auto-vectorize loops and optimizes floating points better.
-			\item \lstinline{#pragma GCC target ("avx2")} can double performance of vectorized code, but causes crashes on old machines.
-			\item \lstinline{#pragma GCC optimize ("trapv")} kills the program on integer overflows (but is really slow).
+			\item O2: This is the default optimization option on Codeforces, so using this might not give any tangible benefit.
+			\item O3: This is the first non-trivial optimization option. It can make your code slower sometimes (due to the large size of generated code), but it is not very frequent in competitive programming. Some of the things it does are:
+
+					Auto-vectorize the code if the mentioned architectures allow it. This can make your code much faster by using SIMD (single instruction, multiple data) which kinda parallelizes your code on an instruction level. More info below.
+					Function inlining — inlines functions aggressively if possible (and no, marking functions as inline doesn't inline functions, nor does it give hints to the compiler)
+					Unrolls loops more aggressively than O2 (this might lead to instruction cache misses if generated code size is too large)
+
+			\item Ofast: This is one of the more controversial flags. It turns on all optimizations that O3 offers, along with some other optimizations, some of which might not be standards compliant. For instance, it turns on the fast-math optimization, which assumes floating-point arithmetic is associative (among other things), and under this assumption, it is not unexpected to see your floating-point error analysis go to waste. Ofast may or may not make your code faster; only use this if you're sure it does the right things.
+		\end{itemize}
+		\lstinline{#pragma GCC target("...")}
+		\begin{itemize}
+    	\item avx and avx2: These are instruction sets that provide 8, 16 and 32 byte vector instructions (i.e., you can do some kinds of operations on pairs of 8 aligned integers at the same time). Prefer using avx2 since it's newer.
+    	\item sse, sse2, sse3, sse4, sse4.1, sse4.2: These are instruction sets that are also for vectorization, but they're older and not as good as avx and avx2. These are useful for competitions on websites such as Yandex, where avx2 is not supported and gives a runtime error due to unrecognized instruction (it corresponds to a SIGILL signal — ill-formed instruction).
+    	\item popcnt, lzcnt — These optimize the popcount (\_\_builtin\_popcount family) and count leading zeros (\_\_builtin\_clz family) operations respectively.
+    	\item abm, bmi, bmi2: These are bit manipulation instruction sets (note that bmi is not a subset of bmi2). They provide even more bitwise operations like ctz, blsi, and pdep.
+    	\item fma: This is not so widely used, since avx and sse make up for most of it already.
+    	\item mmx: This is even older than the sse* family of instruction sets, hence is generally useless.
+
 		\end{itemize}
 	\kactlimport{FastMod.h}
 	\kactlimport{FastInput.h}
