@@ -18,15 +18,17 @@ help:
 	@echo "For more information see the file 'doc/README'"
 
 fast: | build
-	$(LATEXCMD) content/kactl.tex </dev/null
-	cp build/kactl.pdf kactl.pdf
+	$(LATEXCMD) content/eva-fan-club.tex </dev/null
+	cp build/eva-fan-club.pdf eva-fan-club.pdf
 
-kactl: test-session.pdf | build
-	$(LATEXCMD) content/kactl.tex && $(LATEXCMD) content/kactl.tex
-	cp build/kactl.pdf kactl.pdf
+eva: | build
+	$(LATEXCMD) content/eva-fan-club.tex </dev/null
+	$(LATEXCMD) content/eva-fan-club.tex </dev/null
+	cp build/eva-fan-club.pdf eva-fan-club.pdf
 
 clean:
-	cd build && rm -f kactl.aux kactl.log kactl.tmp kactl.toc kactl.pdf kactl.ptc
+	# cd build && rm -f kactl.aux kactl.log kactl.tmp kactl.toc kactl.pdf kactl.ptc
+	cd build && rm -f eva-fan-club.aux eva-fan-club.log eva-fan-club.tmp eva-fan-club.toc eva-fan-club.pdf eva-fan-club.ptc
 
 veryclean: clean
 	rm -f kactl.pdf test-session.pdf
@@ -42,9 +44,9 @@ test:
 test-compiles:
 	./doc/scripts/compile-all.sh .
 
-test-session.pdf: content/test-session/test-session.tex content/test-session/chapter.tex | build
-	$(LATEXCMD) content/test-session/test-session.tex
-	cp build/test-session.pdf test-session.pdf
+# test-session.pdf: content/test-session/test-session.tex content/test-session/chapter.tex | build
+# 	$(LATEXCMD) content/test-session/test-session.tex
+# 	cp build/test-session.pdf test-session.pdf
 
 showexcluded: build
 	grep -RoPh '^\s*\\kactlimport{\K.*' content/ | sed 's/.$$//' > build/headers_included
