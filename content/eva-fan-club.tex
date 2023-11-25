@@ -5,13 +5,21 @@
 \usepackage{kactlpkg}
 \kactlcontentdir{content}
 
-\university{NUST MISIS}{NUST MISIS}{MISIS}
+\university{MISIS University}{MISIS University}{MISIS}
 \team{Eva Fan Club}{Bikmetov, Panin, Shabaev}
 % \contest{ACM-ICPC World Finals 2017}{May 24, 2017}
 % \contest{\ }{\today}
 % \enablecolors
 
+% Cyryllic support
+\usepackage{cmap}
+\usepackage[T1, T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english, russian]{babel}
+
 \begin{document}
+	\selectlanguage{english}
+
 	% \maketeampage
 	% Small KACTL header on the first page:
 	% \maketitle{``One Last Time'' Edition}{\today}
@@ -19,7 +27,7 @@
 	\thispagestyle{fancy}
 	% Table of contents, without subsections:
 	\setcounter{tocdepth}{0}
-	% \tableofcontents
+	\tableofcontents\thispagestyle{fancy}
 
 	\kactlchapter{contest}
 	\kactlchapter{math}
