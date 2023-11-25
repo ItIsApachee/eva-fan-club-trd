@@ -1,23 +1,18 @@
-#!/usr/bin/sh
-# Usage: ~/stress.sh -sm smart -st stupid -g gen
-smrt = "smart"
-stpid = "stupid"
-gn = "gen" 
+#!/usr/bin/env bash
+# usage:
+# $ stress.sh <smart> <stupid> <gen> <number of tests>
+g++ $1.cpp -o $1 -O2
+g++ $2.cpp -o $2 -O2
+g++ $3.cpp -o $3 -O2
 
-while getopts sm:st:g: opt
+for ((t=1;t<$4;t++))
 do
-    case "${opt}" in
-        sm) smrt="${OPTARG}";;
-        st) stpid="${OPTARG}";;
-        g) gn="${OPTARG}";;
-    esac
+    ./$3 $t > input
+    ./$2 < input > slow.out
+    ./$1 < input > smart.out
+
+    diff smart.out slow.out || exit 123;
+    echo "test $t passed"
 done
-g++ -std=c++20 -O2 "${smrt}.cpp" -o ${smrt} 
-g++ -std=c++20 -O2 "${stpid}.cpp" -o ${stpid} 
-g++ -std=c++20 -O2 "${gn}.cpp" -o ${gn} 
-for((i=1;i<1000;++i)); do
-    echo $i;
-    ./${gn} $i > genIn;
-    diff <(./${smrt} < genIn) <(./${stpid} < genIn) || break;
-done
-#~/stress.sh -sm smart -st stupid -g gen
+echo Passed all \($4\) tests
+
